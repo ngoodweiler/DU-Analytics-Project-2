@@ -83,12 +83,14 @@ function goldProdInit(){
   var goldProdChart = d3.selectAll('#goldProduction').node();
   Plotly.newPlot(goldProdChart,data,layout);
 })};
+
+// Event listener for drop down box to change the gold production chart
 d3.selectAll('#selDatasetGold').on('change',updateGoldProd);
 function updateGoldProd(){
   var goldProdDropdown = d3.select('#selDatasetGold');
   var datasetGold = goldProdDropdown.node().value;
   var goldProdChart = d3.selectAll('#goldProduction').node();
-
+// Using case switching for easier modification
   var x = [];
   var y = [];
   switch(datasetGold) {
@@ -113,7 +115,7 @@ function updateGoldProd(){
       name = 'World GDP per Capita';
       break;
   }
-  Plotly.restyle(goldProdChart, 'x',[undefined,x]);
+  Plotly.restyle(goldProdChart, 'x',[undefined,x]); //Due to having two traces, the first trace is constant, so an array has to be shown for the changes in x and y with undefined for the first trace so it does not change
   Plotly.restyle(goldProdChart,'y',[undefined,y]);
   Plotly.restyle(goldProdChart,'name',[undefined,name]);
 }
@@ -121,6 +123,7 @@ goldProdInit();
 
 
 // Regression Data
+// Note - Using AnyChart combined with Regression.js to visualize the linear regression on the raw data chart
 var goldPriceR = [];
 var gdp_gr = [];
 var pop_gr = [];
@@ -190,6 +193,8 @@ function goldProdInitR(){
     var goldProdChartR = d3.selectAll('#goldRegression').node();
     Plotly.newPlot(goldProdChartR,data,layout);
 })};
+
+// Similar to event listener above, this time for scatter plots instead of just time scale
 d3.selectAll('#selDatasetGoldR').on('change',updateGoldProdR);
 function updateGoldProdR(){
   var goldProdDropdownR = d3.select('#selDatasetGoldR');
@@ -235,7 +240,7 @@ goldProdInitR();
 var gModelYears = [];
 var goldModel = [];
 var goldActual = [];
-
+// Python was used to create the regression data because it was easier to do so
 d3.csv("./static/js/regression.csv").then(function(gModelData) {
   gModelData.map(function(d) {
     gModelYears.push(d.year);
@@ -266,81 +271,82 @@ d3.csv("./static/js/regression.csv").then(function(gModelData) {
   Plotly.newPlot('goldModel',data,layout);
 });
 
+// Code below is start of Copper graphs and needs to be moved to the copper js file
 // Copper Prod
-var year_c = [];
-var copperPrice = [];
-var gdp_c = [];
-var pop_c = [];
-var copperProd = [];
-function copperProdInit(){
-  d3.csv("./static/js/regression.csv").then(function(copperData) {
-    copperData.map(function(d) {
-      year_c.push(d.year);
-      copperPrice.push(d.copperPrice);
-      gdp_c.push(d.gdp);
-      pop_c.push(d.pop);
-      copperProd.push(d.copperProd);
-    });
-    var trace1 = {
-      type: 'scatter',
-      name: 'Copper Price (US$ per ton)',
-      x: year_c,
-      y: copperPrice
-    };
-    var trace2 = {
-      type: 'scatter',
-      name: 'World GDP per Capita',
-      x: year_c,
-      y: gdp_c,
-      yaxis: 'y2'
-  };
-  var data = [trace1,trace2];
-  var layout = {
-    title: 'Copper Price and Index Comparisons',
-    legend: {
-      'x': 1.05,
-    },
-    autosize: true,
-    yaxis2: {
-      overlaying: 'y',
-      side: 'right'
-    }
-  };
-  var copperProdChart = d3.selectAll('#copperProduction').node();
-  Plotly.newPlot(copperProdChart,data,layout);
-})};
-d3.selectAll('#selDatasetCopper').on('change',updateCopperProd);
-function updateCopperProd(){
-  var copperProdDropdown = d3.select('#selDatasetCopper');
-  var datasetCopper = copperProdDropdown.node().value;
-  var copperProdChart = d3.selectAll('#copperProduction').node();
+// var year_c = [];
+// var copperPrice = [];
+// var gdp_c = [];
+// var pop_c = [];
+// var copperProd = [];
+// function copperProdInit(){
+//   d3.csv("./static/js/regression.csv").then(function(copperData) {
+//     copperData.map(function(d) {
+//       year_c.push(d.year);
+//       copperPrice.push(d.copperPrice);
+//       gdp_c.push(d.gdp);
+//       pop_c.push(d.pop);
+//       copperProd.push(d.copperProd);
+//     });
+//     var trace1 = {
+//       type: 'scatter',
+//       name: 'Copper Price (US$ per ton)',
+//       x: year_c,
+//       y: copperPrice
+//     };
+//     var trace2 = {
+//       type: 'scatter',
+//       name: 'World GDP per Capita',
+//       x: year_c,
+//       y: gdp_c,
+//       yaxis: 'y2'
+//   };
+//   var data = [trace1,trace2];
+//   var layout = {
+//     title: 'Copper Price and Index Comparisons',
+//     legend: {
+//       'x': 1.05,
+//     },
+//     autosize: true,
+//     yaxis2: {
+//       overlaying: 'y',
+//       side: 'right'
+//     }
+//   };
+//   var copperProdChart = d3.selectAll('#copperProduction').node();
+//   Plotly.newPlot(copperProdChart,data,layout);
+// })};
+// d3.selectAll('#selDatasetCopper').on('change',updateCopperProd);
+// function updateCopperProd(){
+//   var copperProdDropdown = d3.select('#selDatasetCopper');
+//   var datasetCopper = copperProdDropdown.node().value;
+//   var copperProdChart = d3.selectAll('#copperProduction').node();
 
-  var x = [];
-  var y = [];
-  switch(datasetCopper) {
-    case 'copperGdp':
-      x = year_c;
-      y = gdp_c;
-      name = 'World GDP per Capita';
-      break;
-    case 'copperPop':
-      x = year_c;
-      y = pop_c;
-      name = 'World Population Growth Rate';
-      break;
-    case 'copperProd':
-      x = year_c;
-      y = copperProd;
-      name = "World copper Production ('000s tons)";
-      break;
-    default:
-      x = year_c;
-      y = gdp_c;
-      name = 'World GDP per Capita';
-      break;
-  }
-  Plotly.restyle(copperProdChart, 'x',[undefined,x]);
-  Plotly.restyle(copperProdChart,'y',[undefined,y]);
-  Plotly.restyle(copperProdChart,'name',[undefined,name]);
-}
-copperProdInit();
+//   var x = [];
+//   var y = [];
+//   switch(datasetCopper) {
+//     case 'copperGdp':
+//       x = year_c;
+//       y = gdp_c;
+//       name = 'World GDP per Capita';
+//       break;
+//     case 'copperPop':
+//       x = year_c;
+//       y = pop_c;
+//       name = 'World Population Growth Rate';
+//       break;
+//     case 'copperProd':
+//       x = year_c;
+//       y = copperProd;
+//       name = "World copper Production ('000s tons)";
+//       break;
+//     default:
+//       x = year_c;
+//       y = gdp_c;
+//       name = 'World GDP per Capita';
+//       break;
+//   }
+//   Plotly.restyle(copperProdChart, 'x',[undefined,x]);
+//   Plotly.restyle(copperProdChart,'y',[undefined,y]);
+//   Plotly.restyle(copperProdChart,'name',[undefined,name]);
+// }
+// copperProdInit();
